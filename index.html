@@ -338,6 +338,190 @@
       font-size: 13px;
     }
 
+    .manual-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 10, 16, .76);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 9999;
+    }
+
+    .manual-overlay.show {
+      display: flex;
+    }
+
+    .manual-panel {
+      width: min(1180px, 100%);
+      max-height: 88vh;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid rgba(73,197,232,.18);
+      background: linear-gradient(180deg, rgba(10,18,27,.98), rgba(7,14,21,.99));
+      box-shadow: 0 20px 60px rgba(0,0,0,.42);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .manual-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(73,197,232,.10);
+      background: linear-gradient(135deg, rgba(73,197,232,.10), rgba(255,255,255,.02));
+    }
+
+    .manual-head h2 {
+      margin: 0;
+      font-size: 28px;
+    }
+
+    .manual-head p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 780px;
+      font-size: 14px;
+    }
+
+    .manual-close {
+      min-width: 46px;
+      min-height: 46px;
+      border-radius: 14px;
+      border: 1px solid rgba(73,197,232,.18);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    .manual-body {
+      overflow: auto;
+      padding: 22px;
+    }
+
+    .manual-grid {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .manual-nav {
+      position: sticky;
+      top: 0;
+      align-self: start;
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(73,197,232,.10);
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .manual-nav h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: var(--cyan-2);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    .manual-nav a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 9px 10px;
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.35;
+      transition: .18s ease;
+    }
+
+    .manual-nav a:hover {
+      color: var(--text);
+      background: rgba(73,197,232,.08);
+    }
+
+    .manual-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .manual-section {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(73,197,232,.10);
+      border-radius: 18px;
+      padding: 18px;
+      scroll-margin-top: 20px;
+    }
+
+    .manual-section h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .manual-section p {
+      margin: 10px 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-size: 14px;
+    }
+
+    .manual-section code {
+      display: block;
+      white-space: pre-wrap;
+      background: rgba(73,197,232,.06);
+      border: 1px solid rgba(73,197,232,.10);
+      color: #dff8ff;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 10px 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .manual-section table {
+      margin-top: 10px;
+    }
+
+    .manual-section ul {
+      margin: 10px 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    .manual-kpis {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .manual-kpi {
+      background: rgba(73,197,232,.05);
+      border: 1px solid rgba(73,197,232,.10);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .manual-kpi b {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .source-links a {
+      color: var(--cyan-2);
+      text-decoration: none;
+    }
+
     .kpis {
       display: grid;
       grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -611,6 +795,7 @@
       </div>
       <div class="hero-actions">
         <button class="btn" id="loadExample">Carregar exemplo</button>
+        <button class="btn" id="openManual">Ajuda / Manual</button>
         <button class="btn primary" id="copySummary">Copiar resumo comercial</button>
         <button class="btn ghost" id="printView">Imprimir / PDF</button>
       </div>
@@ -801,6 +986,162 @@
         </div>
       </section>
     </div>
+  <div class="manual-overlay" id="manualOverlay" aria-hidden="true">
+    <div class="manual-panel" role="dialog" aria-modal="true" aria-labelledby="manualTitle">
+      <div class="manual-head">
+        <div>
+          <div class="badge">Ajuda integrada</div>
+          <h2 id="manualTitle">Manual do Simulador DIC/FIC com ROI</h2>
+          <p>Guia autoexplicativo com conceitos, fórmulas, interpretação dos indicadores e orientação de uso comercial e técnico do simulador da Expert Energy.</p>
+        </div>
+        <button class="manual-close" id="closeManual" aria-label="Fechar manual">×</button>
+      </div>
+      <div class="manual-body">
+        <div class="manual-grid">
+          <aside class="manual-nav">
+            <h3>Navegação</h3>
+            <a href="#m1">1. Finalidade</a>
+            <a href="#m2">2. Conceitos</a>
+            <a href="#m3">3. Métodos</a>
+            <a href="#m4">4. Cadastro do cliente</a>
+            <a href="#m5">5. Base econômica</a>
+            <a href="#m6">6. Confiabilidade</a>
+            <a href="#m7">7. Método realista</a>
+            <a href="#m8">8. Fórmulas principais</a>
+            <a href="#m9">9. Como ler o gráfico</a>
+            <a href="#m10">10. Como interpretar ENS</a>
+            <a href="#m11">11. Método referência</a>
+            <a href="#m12">12. Uso em reunião</a>
+            <a href="#m13">13. Limitações</a>
+            <a href="#m14">14. Frases prontas</a>
+            <a href="#m15">15. Referências</a>
+          </aside>
+          <div class="manual-content">
+            <section class="manual-section" id="m1">
+              <h3>1. Finalidade do simulador</h3>
+              <p>O simulador converte indicadores de continuidade do fornecimento em uma leitura econômica para apoiar reuniões, propostas e análises de viabilidade. Ele estima o custo da indisponibilidade elétrica por hora, por evento e por ano, além de calcular economia anual, payback e ROI de soluções de mitigação.</p>
+              <div class="manual-kpis">
+                <div class="manual-kpi"><b>Pergunta 1</b>Quanto custa 1 hora sem energia?</div>
+                <div class="manual-kpi"><b>Pergunta 2</b>Quanto custa cada evento de interrupção?</div>
+                <div class="manual-kpi"><b>Pergunta 3</b>Em quanto tempo o investimento se paga?</div>
+              </div>
+            </section>
+
+            <section class="manual-section" id="m2">
+              <h3>2. Conceitos fundamentais</h3>
+              <p><b>DIC</b> é a duração total de interrupção percebida por uma unidade consumidora no período analisado. <b>FIC</b> é a frequência de interrupção, ou seja, o número de vezes em que essa unidade ficou sem energia. <b>ENS</b> é a energia não suprida, utilizada como indicador físico da indisponibilidade. <b>VoLL</b> é o valor monetário atribuído à energia não suprida.</p>
+              <code>DIC = tempo total sem energia
+FIC = número de interrupções
+ENS = demanda média × DIC
+Impacto VOLL = ENS × VOLL</code>
+            </section>
+
+            <section class="manual-section" id="m3">
+              <h3>3. Métodos de cálculo do simulador</h3>
+              <p>O simulador opera com três metodologias.</p>
+              <p><b>Método simples:</b> usa o faturamento médio por hora e multiplica pelo DIC. É indicado para uma análise inicial, quando ainda não há detalhamento operacional.</p>
+              <code>Impacto simples = faturamento médio por hora × DIC</code>
+              <p><b>Método realista:</b> soma perdas horárias e perdas por evento. Em geral, é o método mais forte para defender o ROI em ambiente industrial e comercial.</p>
+              <code>Impacto realista = (DIC × perdas por hora) + (FIC × custos por evento)</code>
+              <p><b>Método VOLL:</b> transforma a indisponibilidade em energia não suprida e depois em impacto econômico.</p>
+              <code>ENS = demanda média × DIC
+Impacto VOLL = ENS × VOLL</code>
+            </section>
+
+            <section class="manual-section" id="m4">
+              <h3>4. Cadastro do cliente</h3>
+              <p>Os campos de cliente, unidade, segmento, cidade, responsável, consultor, projeto e observação não alteram diretamente os cálculos, mas personalizam a análise e a narrativa automática para uso comercial.</p>
+              <p>Use esses campos para transformar o simulador em peça de apresentação executiva e registrar o contexto da oportunidade.</p>
+            </section>
+
+            <section class="manual-section" id="m5">
+              <h3>5. Base econômica</h3>
+              <p>Essa seção determina principalmente o comportamento do método simples. O <b>faturamento mensal</b> é convertido em valor médio por hora, respeitando a base horária escolhida. A <b>paralisação da operação</b> informa quanto da operação efetivamente é afetado pela falta de energia.</p>
+              <p>Na v3 e nesta versão com manual, você pode escolher a base de cálculo entre <b>horas totais de operação</b> e <b>horas efetivamente produtivas</b>. Isso é importante porque muitas plantas operam mais horas do que realmente geram valor econômico relevante.</p>
+              <code>Faturamento médio por hora = faturamento mensal ÷ (dias produtivos × base horária)
+Faturamento médio por hora ajustado = valor médio por hora × % de paralisação</code>
+              <p>O <b>preset Técnico</b> usa horas totais de operação. O <b>preset Comercial</b> usa horas efetivamente produtivas.</p>
+            </section>
+
+            <section class="manual-section" id="m6">
+              <h3>6. Confiabilidade e mitigação</h3>
+              <p>Essa seção define o cenário atual e o cenário-alvo. O <b>DIC anual</b> e o <b>FIC anual</b> representam a indisponibilidade atual da unidade. Os campos de <b>redução alvo</b> representam a melhoria esperada com a solução proposta.</p>
+              <p>A <b>demanda média</b> é usada para calcular o ENS, e o <b>VOLL</b> converte esse ENS em impacto econômico.</p>
+            </section>
+
+            <section class="manual-section" id="m7">
+              <h3>7. Método realista</h3>
+              <p>O método realista permite capturar perdas efetivamente percebidas pela operação. Os campos de produção perdida, mão de obra ociosa e lucro cessante são custos por hora. Os campos de matéria-prima, reinicialização/setup e multas são custos por evento.</p>
+              <p>Esse método é o mais indicado quando a conversa é sobre resultado operacional, produtividade, retrabalho, lotes perdidos, retomada e margem.</p>
+            </section>
+
+            <section class="manual-section" id="m8">
+              <h3>8. Fórmulas principais do simulador</h3>
+              <code>Duração média por evento = DIC ÷ FIC
+
+Custo por evento realista = (duração média × perdas por hora) + custos por evento
+
+Economia anual = impacto atual − impacto mitigado
+
+Payback = investimento ÷ economia anual
+
+ROI anual = economia anual ÷ investimento</code>
+              <p>Essas fórmulas são aplicadas automaticamente conforme o método de referência selecionado e os percentuais de redução informados.</p>
+            </section>
+
+            <section class="manual-section" id="m9">
+              <h3>9. Como ler o gráfico “Impacto anual por método”</h3>
+              <p>O gráfico compara o impacto anual estimado pelos três métodos. É comum que o <b>método simples</b> apareça bem menor, porque ele usa apenas o faturamento médio por hora multiplicado pelo DIC. Já o método realista inclui perdas operacionais e custos por evento, e o método VOLL pode crescer bastante quando a demanda média e o valor do VOLL são elevados.</p>
+              <p>Em leitura prática: <b>Simples</b> é baseline, <b>Realista</b> é caso de negócio principal e <b>VOLL</b> é reforço técnico-econômico.</p>
+            </section>
+
+            <section class="manual-section" id="m10">
+              <h3>10. Como interpretar ENS</h3>
+              <p>ENS significa <b>Energia Não Suprida</b>. Se o resultado for 13.500 kWh, isso quer dizer que a unidade deixou de receber, no acumulado do período, aproximadamente 13,5 MWh por causa das interrupções.</p>
+              <code>ENS = demanda média (kW) × DIC (h)</code>
+              <p>ENS não é faturamento e não é prejuízo direto. Ele é um indicador físico. Para convertê-lo em valor econômico, o simulador aplica o VOLL.</p>
+            </section>
+
+            <section class="manual-section" id="m11">
+              <h3>11. Método referência</h3>
+              <p>O método referência é aquele usado como base da narrativa comercial e da leitura principal de ROI no simulador.</p>
+              <ul>
+                <li><b>Simples:</b> quando a análise ainda é preliminar.</li>
+                <li><b>Realista:</b> quando há dados operacionais e a meta é defender melhor o ROI.</li>
+                <li><b>VOLL:</b> quando a conversa exige reforço técnico e valoração energética.</li>
+              </ul>
+            </section>
+
+            <section class="manual-section" id="m12">
+              <h3>12. Como usar o simulador em reunião</h3>
+              <p>Preencha os dados do cliente, confirme DIC e FIC, escolha o preset adequado, informe a base de perdas horárias e por evento, e só então selecione o método referência. Em reuniões iniciais, a sequência recomendada é: impacto anual atual, economia anual com mitigação, payback e argumento técnico de ENS/VOLL.</p>
+            </section>
+
+            <section class="manual-section" id="m13">
+              <h3>13. Limitações do simulador</h3>
+              <p>O simulador é uma ferramenta de apoio à decisão. Ele não substitui cálculo regulatório oficial, estudo elétrico detalhado, auditoria contábil ou modelagem probabilística avançada. O objetivo é apoiar a tomada de decisão comercial e técnica com premissas transparentes e consistentes.</p>
+            </section>
+
+            <section class="manual-section" id="m14">
+              <h3>14. Frases prontas para apresentação</h3>
+              <p><b>Leitura simples:</b> “O método simples converte o faturamento mensal em valor médio por hora e estima o impacto anual multiplicando esse valor pelo DIC.”</p>
+              <p><b>Leitura realista:</b> “O método realista aproxima melhor a operação do cliente, somando perdas por hora e custos por evento.”</p>
+              <p><b>Leitura ENS/VOLL:</b> “O ENS mostra quanta energia deixou de ser atendida; o VOLL transforma isso em impacto econômico.”</p>
+              <p><b>Leitura de ROI:</b> “A economia anual esperada com a mitigação é comparada ao investimento para estimar payback e ROI.”</p>
+            </section>
+
+            <section class="manual-section source-links" id="m15">
+              <h3>15. Referências técnicas e regulatórias</h3>
+              <p>Definições de DIC, FIC e qualidade do fornecimento na distribuição: <a href="https://www.gov.br/aneel/pt-br/assuntos/distribuicao/qualidade-do-fornecimento-de-energia-eletrica" target="_blank" rel="noopener">ANEEL</a>.</p>
+              <p>ENS como indicador de desempenho e qualidade do suprimento: <a href="https://www.ons.org.br/paginas/resultados-da-operacao/qualidade-do-suprimento" target="_blank" rel="noopener">ONS</a>.</p>
+              <p>Definição econômica de VoLL e sua utilidade para valorar interrupções: <a href="https://www.frontiersin.org/journals/energy-research/articles/10.3389/fenrg.2015.00055/full" target="_blank" rel="noopener">Frontiers in Energy Research</a>.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </div>
 
   <script>
@@ -1262,6 +1603,44 @@
         el('hourMode').value = btn.dataset.preset === 'commercial' ? 'productive' : 'operation';
         update();
       });
+    });
+
+    const manualOverlay = el('manualOverlay');
+    const openManualBtn = el('openManual');
+    const closeManualBtn = el('closeManual');
+
+    function openManual() {
+      if (!manualOverlay) return;
+      manualOverlay.classList.add('show');
+      manualOverlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeManual() {
+      if (!manualOverlay) return;
+      manualOverlay.classList.remove('show');
+      manualOverlay.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    if (openManualBtn) openManualBtn.addEventListener('click', openManual);
+    if (closeManualBtn) closeManualBtn.addEventListener('click', closeManual);
+    if (manualOverlay) {
+      manualOverlay.addEventListener('click', (event) => {
+        if (event.target === manualOverlay) closeManual();
+      });
+      manualOverlay.querySelectorAll('.manual-nav a').forEach(link => {
+        link.addEventListener('click', () => {
+          const href = link.getAttribute('href');
+          const target = href ? document.querySelector(href) : null;
+          if (target) {
+            setTimeout(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }), 10);
+          }
+        });
+      });
+    }
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeManual();
     });
 
     el('loadExample').addEventListener('click', loadExample);
