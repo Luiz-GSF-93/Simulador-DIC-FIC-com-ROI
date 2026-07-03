@@ -211,6 +211,17 @@
       font: inherit;
     }
 
+    .field select {
+      color-scheme: dark;
+      background-color: rgba(16,28,38,.96);
+    }
+
+    .field select option,
+    .field select optgroup {
+      background: #101c26;
+      color: #eefcff;
+    }
+
     .field textarea {
       min-height: 72px;
       resize: vertical;
@@ -219,6 +230,112 @@
     .field input:focus, .field select:focus, .field textarea:focus {
       border-color: rgba(73,197,232,.56);
       box-shadow: 0 0 0 3px rgba(73,197,232,.10);
+    }
+
+    .toggle-wrap {
+      grid-column: span 2;
+      padding: 12px;
+      border: 1px solid rgba(73,197,232,.12);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .toggle-group {
+      display: inline-flex;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 14px;
+      background: rgba(73,197,232,.06);
+      border: 1px solid rgba(73,197,232,.12);
+      flex-wrap: wrap;
+    }
+
+    .toggle-btn {
+      appearance: none;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 10px;
+      min-height: 40px;
+      padding: 0 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+
+    .toggle-btn.active {
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(105,217,243,.22), rgba(56,185,223,.14));
+      border-color: rgba(73,197,232,.34);
+      box-shadow: 0 8px 20px rgba(73,197,232,.10);
+    }
+
+    .microcopy {
+      margin-top: 8px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .field.source-active input {
+      border-color: rgba(73,197,232,.52);
+      box-shadow: inset 0 0 0 1px rgba(73,197,232,.18);
+    }
+
+    .preset-wrap {
+      grid-column: span 2;
+      padding: 12px;
+      border: 1px solid rgba(73,197,232,.12);
+      border-radius: 14px;
+      background: rgba(255,255,255,.025);
+    }
+
+    .preset-note {
+      margin-top: 8px;
+      color: var(--muted-2);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .info-tip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(73,197,232,.28);
+      color: var(--cyan-2);
+      font-size: 11px;
+      font-weight: 800;
+      cursor: help;
+      vertical-align: middle;
+    }
+
+    .formula-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .formula-item {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(73,197,232,.09);
+      border-radius: 14px;
+      padding: 12px;
+      line-height: 1.45;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .formula-item b {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+      font-size: 13px;
     }
 
     .kpis {
@@ -471,7 +588,7 @@
       .hero { grid-template-columns: 1fr; text-align: left; }
       .hero img { width: 96px; }
       .kpis { grid-template-columns: 1fr; }
-      .fields, .fields.cols-3, .fields.cols-4, .tips { grid-template-columns: 1fr; }
+      .fields, .fields.cols-3, .fields.cols-4, .tips, .formula-list { grid-template-columns: 1fr; }
       .bar-line { grid-template-columns: 90px 1fr auto; }
       .hero h1 { font-size: 28px; }
     }
@@ -522,12 +639,31 @@
 
       <section class="card span-6">
         <h3>Base econômica</h3>
-        <div class="sub">Premissas para o método simples e para o cálculo do custo horário associado à indisponibilidade.</div>
+        <div class="sub">Premissas para o método simples e para o cálculo do custo horário associado à indisponibilidade. Escolha se o denominador do R$/hora base deve usar horas totais de operação ou horas efetivamente produtivas.</div>
         <div class="fields">
           <div class="field"><label>Faturamento mensal (R$)</label><input id="monthlyRevenue" type="number" min="0" step="1000" value="1000000" /></div>
           <div class="field"><label>Paralisação da operação (%)</label><input id="stopPct" type="number" min="0" max="100" step="1" value="100" /></div>
           <div class="field"><label>Dias produtivos por mês</label><input id="daysPerMonth" type="number" min="1" step="1" value="22" /></div>
-          <div class="field"><label>Horas produtivas por dia</label><input id="hoursPerDay" type="number" min="1" step="0.5" value="8" /></div>
+          <div class="field" id="operationHoursField"><label>Horas totais de operação / dia</label><input id="hoursPerDay" type="number" min="1" step="0.5" value="8" /></div>
+          <div class="toggle-wrap">
+            <label style="display:block;margin-bottom:8px;font-size:12px;color:var(--muted);letter-spacing:.03em;font-weight:700;text-transform:uppercase">Base horária do cálculo</label>
+            <div class="toggle-group" id="hourModeToggle">
+              <button type="button" class="toggle-btn active" data-mode="operation">Horas totais de operação</button>
+              <button type="button" class="toggle-btn" data-mode="productive">Horas efetivamente produtivas</button>
+            </div>
+            <div class="microcopy" id="hourModeHint">O campo faturamento médio por hora usa as horas totais de operação por dia como divisor.</div>
+            <input id="hourMode" type="hidden" value="operation" />
+          </div>
+          <div class="preset-wrap">
+            <label style="display:block;margin-bottom:8px;font-size:12px;color:var(--muted);letter-spacing:.03em;font-weight:700;text-transform:uppercase">Preset do simulador</label>
+            <div class="toggle-group" id="calcPresetToggle">
+              <button type="button" class="toggle-btn active" data-preset="technical">Técnico</button>
+              <button type="button" class="toggle-btn" data-preset="commercial">Comercial</button>
+            </div>
+            <div class="preset-note" id="presetHint">Técnico usa horas totais de operação. Comercial usa horas efetivamente produtivas.</div>
+            <input id="calcPreset" type="hidden" value="technical" />
+          </div>
+          <div class="field" id="productiveHoursField"><label>Horas efetivamente produtivas / dia</label><input id="productiveHoursPerDay" type="number" min="1" step="0.5" value="8" /></div>
           <div class="field"><label>Investimento proposto (R$)</label><input id="investment" type="number" min="0" step="1000" value="150000" /></div>
           <div class="field"><label>Método referência</label>
             <select id="referenceMethod">
@@ -568,7 +704,7 @@
       <section class="card">
         <h3>Resumo executivo</h3>
         <div class="kpis">
-          <div class="kpi"><div class="label">R$/hora base</div><div class="value" id="kpiHourly">R$ 0</div><div class="hint">faturamento ajustado pela paralisação</div></div>
+          <div class="kpi" title="Faturamento mensal convertido em valor médio por hora com base na opção selecionada e ajustado pelo percentual de paralisação."><div class="label">Faturamento médio/h <span class="info-tip" title="Faturamento mensal convertido em valor médio por hora com base na opção selecionada e ajustado pelo percentual de paralisação.">i</span></div><div class="value" id="kpiHourly">R$ 0</div><div class="hint" id="kpiHourlyHint">faturamento ajustado pela paralisação</div></div>
           <div class="kpi"><div class="label">Duração média</div><div class="value" id="kpiEventHours">0 h</div><div class="hint">DIC ÷ FIC</div></div>
           <div class="kpi"><div class="label">R$/evento</div><div class="value" id="kpiEventCost">R$ 0</div><div class="hint">método realista</div></div>
           <div class="kpi"><div class="label">ENS anual</div><div class="value" id="kpiEns">0 kWh</div><div class="hint">demanda média × DIC</div></div>
@@ -582,6 +718,11 @@
           <div class="bar-line"><div class="name">Simples</div><div class="track"><div class="fill simple" id="barSimple"></div></div><div id="valSimple">R$ 0</div></div>
           <div class="bar-line"><div class="name">Realista</div><div class="track"><div class="fill realistic" id="barRealistic"></div></div><div id="valRealistic">R$ 0</div></div>
           <div class="bar-line"><div class="name">VOLL</div><div class="track"><div class="fill voll" id="barVoll"></div></div><div id="valVoll">R$ 0</div></div>
+        </div>
+        <div class="formula-list">
+          <div class="formula-item"><b>Método simples</b>Faturamento médio por hora × DIC. Útil para visão rápida e comercial inicial.</div>
+          <div class="formula-item"><b>Método realista</b>Perdas por hora + custos por evento. Melhor para defender ROI operacional.</div>
+          <div class="formula-item"><b>Método VOLL</b>ENS × VOLL. Útil como referência técnica e regulatória.</div>
         </div>
         <div class="footer-note" id="narrative">Preencha os dados para gerar a leitura comercial automática do cenário.</div>
       </section>
@@ -665,7 +806,7 @@
   <script>
     const ids = [
       'clientName','clientUnit','clientSegment','clientCity','clientContact','consultant','projectName','clientNote',
-      'monthlyRevenue','stopPct','daysPerMonth','hoursPerDay','investment','referenceMethod',
+      'monthlyRevenue','stopPct','daysPerMonth','hoursPerDay','productiveHoursPerDay','hourMode','calcPreset','investment','referenceMethod',
       'dec','fec','decReduction','fecReduction','avgDemand','voll',
       'prodPerHour','laborPerHour','lostProfitPerHour','rawPerEvent','restartPerEvent','finesPerEvent'
     ];
@@ -677,7 +818,7 @@
     function valueOf(id) {
       const node = el(id);
       if (!node) return 0;
-      if (node.tagName === 'SELECT' || node.type === 'text' || node.tagName === 'TEXTAREA') return node.value || '';
+      if (node.tagName === 'SELECT' || node.type === 'text' || node.type === 'hidden' || node.tagName === 'TEXTAREA') return node.value || '';
       const n = parseFloat(node.value);
       return Number.isFinite(n) ? n : 0;
     }
@@ -699,11 +840,64 @@
       return 'Realista';
     }
 
+    function hourModeLabel(mode) {
+      return mode === 'productive' ? 'horas efetivamente produtivas' : 'horas totais de operação';
+    }
+
+    function presetLabel(preset) {
+      return preset === 'commercial' ? 'Comercial' : 'Técnico';
+    }
+
+    function syncPresetFromHourMode() {
+      const mode = valueOf('hourMode') || 'operation';
+      const preset = mode === 'productive' ? 'commercial' : 'technical';
+      el('calcPreset').value = preset;
+    }
+
+    function refreshPresetUI() {
+      const preset = valueOf('calcPreset') || 'technical';
+      document.querySelectorAll('#calcPresetToggle .toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.preset === preset);
+      });
+      const presetHint = document.getElementById('presetHint');
+      if (presetHint) {
+        presetHint.textContent = preset === 'commercial'
+          ? 'Preset Comercial: usa horas efetivamente produtivas como base do faturamento médio por hora.'
+          : 'Preset Técnico: usa horas totais de operação como base do faturamento médio por hora.';
+      }
+    }
+
+    function refreshHourModeUI() {
+      const mode = valueOf('hourMode') || 'operation';
+      document.querySelectorAll('#hourModeToggle .toggle-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mode === mode);
+      });
+      const opField = document.getElementById('operationHoursField');
+      const prodField = document.getElementById('productiveHoursField');
+      if (opField) opField.classList.toggle('source-active', mode === 'operation');
+      if (prodField) prodField.classList.toggle('source-active', mode === 'productive');
+      const hourHint = document.getElementById('hourModeHint');
+      if (hourHint) {
+        hourHint.textContent = mode === 'productive'
+          ? 'O campo faturamento médio por hora usa as horas efetivamente produtivas por dia como divisor.'
+          : 'O campo faturamento médio por hora usa as horas totais de operação por dia como divisor.';
+      }
+      const kpiHint = document.getElementById('kpiHourlyHint');
+      if (kpiHint) {
+        kpiHint.textContent = mode === 'productive'
+          ? 'valor médio por hora ajustado pela paralisação · base: horas efetivamente produtivas'
+          : 'valor médio por hora ajustado pela paralisação · base: horas totais de operação';
+      }
+    }
+
     function calculate(decReductionPct, fecReductionPct) {
       const monthlyRevenue = Math.max(0, valueOf('monthlyRevenue'));
       const stopFactor = Math.max(0, Math.min(100, valueOf('stopPct'))) / 100;
       const daysPerMonth = Math.max(1, valueOf('daysPerMonth'));
       const hoursPerDay = Math.max(1, valueOf('hoursPerDay'));
+      const productiveHoursPerDay = Math.max(1, valueOf('productiveHoursPerDay'));
+      const hourMode = valueOf('hourMode') || 'operation';
+      const baseHoursPerDay = hourMode === 'productive' ? productiveHoursPerDay : hoursPerDay;
       const investment = Math.max(0, valueOf('investment'));
       const dec = Math.max(0, valueOf('dec'));
       const fec = Math.max(0, valueOf('fec'));
@@ -719,7 +913,7 @@
       const decReduction = Math.max(0, Math.min(100, decReductionPct)) / 100;
       const fecReduction = Math.max(0, Math.min(100, fecReductionPct)) / 100;
 
-      const hourlyRevenue = (monthlyRevenue / (daysPerMonth * hoursPerDay)) * stopFactor;
+      const hourlyRevenue = (monthlyRevenue / (daysPerMonth * baseHoursPerDay)) * stopFactor;
       const avgEventHours = fec > 0 ? dec / fec : 0;
 
       const hourlyOperational = prodPerHour + laborPerHour + lostProfitPerHour;
@@ -741,6 +935,10 @@
         dec, fec, investment,
         hourlyRevenue,
         avgEventHours,
+        hourMode,
+        hoursPerDay,
+        productiveHoursPerDay,
+        baseHoursPerDay,
         eventRealistic: (avgEventHours * hourlyOperational) + eventOperational,
         ens: avgDemand * dec,
         annualSimple, annualRealistic, annualVoll,
@@ -920,7 +1118,8 @@
       return clientName + ' · ' + clientUnit + ' · ' + clientSegment + (clientCity ? ' · ' + clientCity : '') + '\n\n' +
         'Projeto: ' + projectName + '. ' + (clientNote ? 'Observação: ' + clientNote + '.\n\n' : '\n\n') +
         'Cenário avaliado com DIC de ' + num(valueOf('dec'), ' h/ano') + ' e FIC de ' + num(valueOf('fec'), ' eventos/ano') + '. ' +
-        'A proposta considera meta de redução de DIC de ' + decReduction + '% e de FIC de ' + fecReduction + '%.\n\n' +
+        'A proposta considera meta de redução de DIC de ' + decReduction + '% e de FIC de ' + fecReduction + '%. ' +
+        'Para o R$/hora base foi utilizada a base de ' + hourModeLabel(result.hourMode) + ', com ' + num(result.baseHoursPerDay, ' h/dia') + '.\n\n' +
         'Impacto anual estimado da indisponibilidade:\n' +
         '- Método simples: ' + money(result.annualSimple) + '\n' +
         '- Método realista: ' + money(result.annualRealistic) + '\n' +
@@ -941,6 +1140,9 @@
       const referenceMethod = valueOf('referenceMethod');
       const result = calculate(decReduction, fecReduction);
       const ref = getReferenceData(result, referenceMethod);
+      syncPresetFromHourMode();
+      refreshPresetUI();
+      refreshHourModeUI();
 
       el('kpiHourly').textContent = money(result.hourlyRevenue);
       el('kpiEventHours').textContent = num(result.avgEventHours, ' h');
@@ -989,8 +1191,8 @@
       if (highest === result.annualRealistic) driver = 'perdas operacionais';
       if (highest === result.annualVoll) driver = 'energia não suprida';
 
-      el('narrative').textContent = (valueOf('clientName') || 'Cliente') + ' · ' + (valueOf('clientUnit') || 'Unidade') + ': o principal vetor de prejuízo neste cenário é ' + driver + '. Com redução alvo de DIC ' + decReduction + '% e FIC ' + fecReduction + '%, o método ' + methodLabel(referenceMethod) + ' projeta payback de ' + paybackLabel(ref.payback) + ' e economia anual de ' + money(ref.savings) + '.';
-      el('referenceNote').textContent = 'Método de referência atual: ' + methodLabel(referenceMethod) + '. ROI anual estimado: ' + N2.format(ref.roi) + '%. Investimento considerado: ' + money(result.investment) + '.';
+      el('narrative').textContent = (valueOf('clientName') || 'Cliente') + ' · ' + (valueOf('clientUnit') || 'Unidade') + ': o principal vetor de prejuízo neste cenário é ' + driver + '. Com redução alvo de DIC ' + decReduction + '% e FIC ' + fecReduction + '%, o método ' + methodLabel(referenceMethod) + ' projeta payback de ' + paybackLabel(ref.payback) + ' e economia anual de ' + money(ref.savings) + '. A base horária utilizada no R$/hora é ' + hourModeLabel(result.hourMode) + ' (' + num(result.baseHoursPerDay, ' h/dia') + ').';
+      el('referenceNote').textContent = 'Método de referência atual: ' + methodLabel(referenceMethod) + '. No método simples, o impacto anual é faturamento médio por hora × DIC. ROI anual estimado: ' + N2.format(ref.roi) + '%. Investimento considerado: ' + money(result.investment) + '. Base horária em uso: ' + hourModeLabel(result.hourMode) + ' (' + num(result.baseHoursPerDay, ' h/dia') + ').';
 
       const text = buildCommercialText(result, referenceMethod);
       el('commercialText').value = text;
@@ -1014,7 +1216,10 @@
         monthlyRevenue: 1000000,
         stopPct: 100,
         daysPerMonth: 22,
-        hoursPerDay: 8,
+        hoursPerDay: 16,
+        productiveHoursPerDay: 8,
+        hourMode: 'productive',
+        calcPreset: 'commercial',
         investment: 150000,
         referenceMethod: 'realistic',
         dec: 6,
@@ -1042,6 +1247,21 @@
         node.addEventListener('input', update);
         node.addEventListener('change', update);
       }
+    });
+
+    document.querySelectorAll('#hourModeToggle .toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el('hourMode').value = btn.dataset.mode;
+        update();
+      });
+    });
+
+    document.querySelectorAll('#calcPresetToggle .toggle-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el('calcPreset').value = btn.dataset.preset;
+        el('hourMode').value = btn.dataset.preset === 'commercial' ? 'productive' : 'operation';
+        update();
+      });
     });
 
     el('loadExample').addEventListener('click', loadExample);
